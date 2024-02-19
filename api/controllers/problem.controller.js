@@ -1,5 +1,4 @@
 import ProblemPage from "../models/ProblemPage.model.js";
-import dotenv from "dotenv";
 
 export const createProblem = async (req, res, next) => {
   const { title, difficulty, category, solution } = req.body;
@@ -63,3 +62,20 @@ export const deleteProblem = async (req, res) => {
     console.log(error);
   }
 };
+
+export const countproblems = async (req, res, next) => {
+  try {
+    const PoblemCount = await ProblemPage.countDocuments();
+    res.status(200).json({ count: PoblemCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const Example = async (req, res, next) => {
+  const selectedOption = req.body.selectedOption;
+  
+  // Process the selected option data as needed
+  // Send response back to the client if necessary
+  res.send('Data received on the backend: ' + selectedOption);
+}
