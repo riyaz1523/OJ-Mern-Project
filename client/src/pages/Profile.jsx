@@ -70,7 +70,7 @@ export default function Profile() {
 
     try {
       dispatch(updateUserStart());
-      const res = await axios.post(`/api/user/update/${currentUser.id}`, formData);
+      const res = await axios.post(`/api/user/update/${currentUser._id}`, formData);
       const data = res.data;
       console.log(data);
       if (data.success === false) {
@@ -87,7 +87,7 @@ export default function Profile() {
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await axios.delete(`/api/user/delete/${currentUser.id}`);
+      const res = await axios.delete(`/api/user/delete/${currentUser._id}`);
       const data = res.data;
       if (data.success === false) {
         dispatch(deleteUserFailure(data));
@@ -112,7 +112,7 @@ export default function Profile() {
     <div className='bg-dark-layer-2 text-white'>
       <div className='p-3 max-w-lg mx-auto '>
         <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4 text-black'>
           <input
             type='file'
             ref={fileRef}

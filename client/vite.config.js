@@ -9,6 +9,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         secure: false,
       },
+      '/problem': {
+        target: 'http://localhost:3000',
+        secure: true,
+      },
     },
   },
   plugins: [react()],
