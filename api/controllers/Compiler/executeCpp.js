@@ -4,38 +4,74 @@ import path from 'path';
 
 const rootDir = path.resolve();
 const outputPath = path.join(rootDir, 'api', 'controllers', 'Compiler', 'outputs');
+const testCasesPath = path.join(rootDir, 'api', 'controllers', 'Compiler','test_cases.json'); // Path to test cases file
 
 if (!fs.existsSync(outputPath)) {
     fs.mkdirSync(outputPath, { recursive: true });
 }
 
-const executeCpp = (filepath) => {
+const executeCpp = (filepath, testCases) => {
     const jobId = path.basename(filepath).split(".")[0];
     const outPath = path.join(outputPath, `${jobId}.exe`);
 
     return new Promise((resolve, reject) => {
-        // Wrap file paths in double quotes
-        const quotedFilePath = `"${filepath}"`;
-        const quotedOutPath = `"${outPath}"`;
-
-        const command = `g++ ${quotedFilePath} -o ${quotedOutPath} && cd "${outputPath}" && .\\${jobId}.exe`;
-        console.log("Executing command: ", command);
-
-        exec(command, (error, stdout, stderr) => {
-            console.log("Stdout: ", stdout);
-            console.error("Stderr: ", stderr);
-
-            if (error) {
-                console.error("Error: ", error);
-                reject({ error, stderr });
+        // Compile the user's code
+        const compileCommand = `g++ "${filepath}" -o "${outPath}"`;
+        exec(compileCommand, (compileError) => {
+            if (compileError) {
+                console.error("Compilation Error: ", compileError);
+                reject({ error: compileError });
+                return;
             }
-            if (stderr) {
-                console.error("Stderr: ", stderr);
-                reject(stderr);
-            }
-            resolve(stdout);
+    
+            // Execute the compiled code against each test case
+            const promises = testCases.map((testCase) => {
+                const { input, output: expectedOutput } = testCase;
+    
+                const command = `"${outPath}"`;
+                return new Promise((resolveTestCase, rejectTestCase) => {
+                    const childProcess = exec(command, (error, stdout, stderr) => {
+                        if (error) {
+                            console.error("Execution Error: ", error);
+                            rejectTestCase({ verdict: "Runtime Error", output: stderr });
+                            return;
+                        }
+        
+                        // Compare the output with expected output
+                        const actualOutput = stdout.trim();
+                        if (actualOutput === expectedOutput) {
+                            resolveTestCase({ verdict: "Accepted", output: actualOutput });
+                        } else {
+                            resolveTestCase({ verdict: "Wrong Answer", output: actualOutput });
+                        }
+                    });
+        
+                    // Provide input to the program
+                    childProcess.stdin.write(input);
+                    childProcess.stdin.end();
+                });
+            });
+    
+            Promise.all(promises)
+                .then((results) => resolve(results))
+                .catch((error) => reject(error));
         });
     });
 };
 
-export {executeCpp};
+
+// Load test cases from file
+const testCasesData = fs.readFileSync(testCasesPath, 'utf8');
+const testCases = JSON.parse(testCasesData);
+
+// Usage
+export const executeAndTestCpp = async (filepath) => {
+    try {
+        const results = await executeCpp(filepath, testCases);
+        console.log("Results: ", results);
+        return results;
+    } catch (error) {
+        console.error("Error: ", error);
+        throw error;
+    }
+};
