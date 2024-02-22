@@ -25,7 +25,7 @@ const executeCpp = (filepath, testCases) => {
             }
     
             // Execute the compiled code against each test case
-            const promises = testCases.map((testCase) => {
+            const promises = testCases.map((testCase, index) => {
                 const { input, output: expectedOutput } = testCase;
     
                 const command = `"${outPath}"`;
@@ -42,7 +42,7 @@ const executeCpp = (filepath, testCases) => {
                         if (actualOutput === expectedOutput) {
                             resolveTestCase({ verdict: "Accepted", output: actualOutput });
                         } else {
-                            resolveTestCase({ verdict: "Wrong Answer", output: actualOutput });
+                            resolveTestCase({ verdict: "Wrong Answer", output: actualOutput, index });
                         }
                     });
         
@@ -53,7 +53,11 @@ const executeCpp = (filepath, testCases) => {
             });
     
             Promise.all(promises)
-                .then((results) => resolve(results))
+                .then((results) => {
+                    // Check if all verdicts are "Accepted"
+                    const allAccepted = results.every(result => result.verdict === "Accepted");
+                    resolve({ allAccepted, failedTestCases: results.filter(result => result.verdict !== "Accepted") });
+                })
                 .catch((error) => reject(error));
         });
     });
@@ -67,9 +71,12 @@ const testCases = JSON.parse(testCasesData);
 // Usage
 export const executeAndTestCpp = async (filepath) => {
     try {
-        const results = await executeCpp(filepath, testCases);
-        console.log("Results: ", results);
-        return results;
+        const { allAccepted, failedTestCases } = await executeCpp(filepath, testCases);
+        console.log("All tests passed:", allAccepted);
+        if (!allAccepted) {
+            console.log("Failed test cases:", failedTestCases);
+        }
+        return allAccepted;
     } catch (error) {
         console.error("Error: ", error);
         throw error;

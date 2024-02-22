@@ -17,7 +17,7 @@ export default function CreateProblem() {
       try {
         const response = await axios({
           method: "post",
-          baseURL: "http://localhost:3000/problem",
+          baseURL: "/problem/",
           url: "createProblem",
           data: {
             title,

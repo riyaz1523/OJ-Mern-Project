@@ -27,7 +27,7 @@ export default function UpdateProblem() {
     const { title, difficulty, category, solution, description, input, output, explanation, testcase1 } = formData;
   
     try {
-      const result = await axios.put(`http://localhost:3000/problem/updateproblems/${id}`, {
+      const result = await axios.put(`/problem/updateproblems/${id}`, {
         title,
         difficulty,
         category,
@@ -48,7 +48,7 @@ export default function UpdateProblem() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/problem/getProblemsparams/${id}`)
+      .get(`/problem/getProblemsparams/${id}`)
       .then((result) => {
         setFormData(result.data);
       })

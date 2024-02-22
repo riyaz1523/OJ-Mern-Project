@@ -13,6 +13,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         secure: true,
       },
+      '/compiler': {
+        target: 'http://localhost:3000',
+        secure: true,
+      },
     },
   },
   plugins: [react()],
