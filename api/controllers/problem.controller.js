@@ -1,7 +1,7 @@
 import ProblemPage from "../models/ProblemPage.model.js";
 
 export const createProblem = async (req, res, next) => {
-  const { title, difficulty, category, solution } = req.body;
+  const { title, difficulty, category, solution, testcase1 } = req.body;
   ProblemPage.create(req.body)
     .then((problems) => res.json(problems))
     .catch((err) => res.json(err));

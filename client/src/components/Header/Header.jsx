@@ -11,7 +11,7 @@ export default function Header() {
 
   return (
     <div className="bg-dark-layer-1 text-white">
-      <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
+      <div className="flex justify-between items-center max-w-6xl mx-auto p-3 ">
         <Link to="/">
           <h1 className="font-bold text-xl">Online Judge</h1>
         </Link>

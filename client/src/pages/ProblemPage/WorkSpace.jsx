@@ -18,7 +18,7 @@ export default function WorkSpace() {
       .catch((err) => console.log(err));
   }, []);
   return (
-    <Split className='split' direction='horizontal' maxSize={1000}>
+    <Split className='split h-screen' direction='horizontal' maxSize={1000}>
       <div><ProblemDescription problem={problem} /></div>
       <div><PlayGround problem={problem}/></div>
     </Split>

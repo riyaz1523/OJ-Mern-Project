@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 export default function PrefNav({ selectedLanguage, setSelectedLanguage }) {
-  const options = ['java', 'py'];
+  const options = ['cpp','java', 'py'];
 
   const handleOptionChange = (event) => {
     const selectedValue = event.target.value;
@@ -20,7 +20,7 @@ export default function PrefNav({ selectedLanguage, setSelectedLanguage }) {
                 onChange={handleOptionChange}
                 className="ml-2 p-2 rounded bg-dark-fill-3 text-white border border-transparent focus:outline-none focus:ring-gray-400"
               >
-                <option value="cpp" style={{ backgroundColor:`black` }}>cpp</option>
+                <option style={{ backgroundColor:`black` }}>Select Option</option>
                 {options.map(option => (
                   <option key={option} value={option} style={{ backgroundColor: "gray" }}>{option}</option>
                 ))}

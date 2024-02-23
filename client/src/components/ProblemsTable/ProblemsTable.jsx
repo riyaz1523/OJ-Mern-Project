@@ -22,18 +22,17 @@ export default function ProblemsTable() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulate loading delay for 3000ms
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        const result = await axios.get("/problem/");
+        const [result, countResult, problemCountResult] = await Promise.all([
+          axios.get("/problem/"),
+          axios.get("/api/user/countuser"),
+          axios.get("/problem/countProblem")
+        ]);
         setProblems(result.data);
-        setLoadingProblems(false); // Set loading state to false after data fetching
-
-        const countResult = await axios.get("/api/user/countuser");
         setUserCount(countResult.data);
-
-        const problemCountResult = await axios.get("/problem/countProblem");
         setproblemCount(problemCountResult.data);
+        setLoadingProblems(false); // Set loading state to false after data fetching
       } catch (error) {
         console.error("Error fetching data:", error);
         setLoadingProblems(false); // Set loading state to false in case of error
@@ -117,6 +116,7 @@ export default function ProblemsTable() {
             .filter((problem) => problem.title.toLowerCase().includes(query))
             .slice(firstindex, lastIndex) // Apply pagination after filtering
             .map((problems, idx) => {
+              const index = firstindex + idx + 1;
               const difficulyColor =
                 problems.difficulty === "Easy"
                   ? "text-green-500"
@@ -139,14 +139,14 @@ export default function ProblemsTable() {
                         to={`/workspace/${problems._id}`}
                         className="hover:text-blue-600 cursor-pointer"
                       >
-                        {problems.title}
+                        {index}.{problems.title}
                       </Link>
                     ) : (
                       <Link
                         to={`/workspace/${problems._id}`}
                         className="hover:text-blue-600 cursor-pointer w-32"
                       >
-                        {problems.title}
+                        {index}.{problems.title}
                       </Link>
                     )}
                   </td>

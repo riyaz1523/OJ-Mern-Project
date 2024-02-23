@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function UpdateProblem() {
@@ -11,40 +10,46 @@ export default function UpdateProblem() {
     category: "",
     solution: "",
     description: "",
-    input: ""
+    input: "",
+    output: "",
+    explanation: "",
+    testcase1: "",
   });
   const [loading, setLoading] = useState(false);
-  const [problems, setProblems] = useState([]);
   const navigate = useNavigate();
+
   const handleChange = (e) => {
-    const { id: fieldId, value } = e.target; // Renamed id to fieldId
-    setFormData({ ...formData, [fieldId]: value }); // Use fieldId here
+    const { id: fieldId, value } = e.target;
+    if (fieldId === "testcase1Input") {
+      setFormData({
+        ...formData,
+        testcase1: {
+          ...formData.testcase1,
+          input: value,
+        },
+      });
+    } else if (fieldId === "testcase1Output") {
+      setFormData({
+        ...formData,
+        testcase1: {
+          ...formData.testcase1,
+          output: value,
+        },
+      });
+    } else {
+      setFormData({ ...formData, [fieldId]: value });
+    }
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { title, difficulty, category, solution, description, input, output, explanation, testcase1 } = formData;
-  
     try {
-      const result = await axios.put(`/problem/updateproblems/${id}`, {
-        title,
-        difficulty,
-        category,
-        solution,
-        description,
-        input,
-        output,
-        explanation,
-        testcase1,
-      });
-      // console.log(result);
+      const result = await axios.put(`/problem/updateproblems/${id}`, formData);
       navigate("/");
     } catch (err) {
       console.log(err.message);
     }
   };
-  
 
   useEffect(() => {
     axios
@@ -54,7 +59,7 @@ export default function UpdateProblem() {
       })
       .catch((err) => console.log(err.message));
   }, [id]);
-  
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-7">
@@ -71,7 +76,7 @@ export default function UpdateProblem() {
         />
         <input
           type="text"
-          placeholder="difficulty"
+          placeholder="Difficulty"
           id="difficulty"
           className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
@@ -79,7 +84,7 @@ export default function UpdateProblem() {
         />
         <input
           type="text"
-          placeholder="category"
+          placeholder="Category"
           id="category"
           className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
@@ -87,7 +92,7 @@ export default function UpdateProblem() {
         />
         <input
           type="text"
-          placeholder="solution"
+          placeholder="Solution"
           id="solution"
           className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
@@ -109,33 +114,52 @@ export default function UpdateProblem() {
           onChange={handleChange}
           value={formData.input}
         />
-        <label htmlFor="output" className="text-black font-medium ">Enter Sample Output</label>
+        <label htmlFor="output" className="text-black font-medium ">
+          Enter Sample Output
+        </label>
         <input
           type="text"
-          placeholder="output"
+          placeholder="Output"
           id="output"
-          className="bg-slate-100 p-3  outline-none"
+          className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
           value={formData.output}
         />
-        <label htmlFor="explanation" className="text-black font-medium ">Enter Explanation</label>
+        <label htmlFor="explanation" className="text-black font-medium ">
+          Enter Explanation
+        </label>
         <input
           type="text"
           placeholder="Explanation"
           id="explanation"
-          className="bg-slate-100 p-3  outline-none"
+          className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
           value={formData.explanation}
         />
-        <label htmlFor="testcase1" className="text-black font-medium ">Enter Test case 1</label>
+        <label htmlFor="testcase1Input" className="text-black font-medium">
+          Enter Test case 1 Input
+        </label>
         <input
           type="text"
-          placeholder="Test case1"
-          id="testcase1"
-          className="bg-slate-100 p-3  outline-none"
+          placeholder="Test case 1 Input"
+          id="testcase1Input"
+          className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
-          value={formData.testcase1}
+          value={formData.testcase1.input}
         />
+
+        <label htmlFor="testcase1Output" className="text-black font-medium">
+          Enter Test case 1 Output
+        </label>
+        <input
+          type="text"
+          placeholder="Test case 1 Output"
+          id="testcase1Output"
+          className="bg-slate-100 p-3 rounded-lg"
+          onChange={handleChange}
+          value={formData.testcase1.output}
+        />
+
         <button
           disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"

@@ -46,8 +46,14 @@ const ProblemSchema = new mongoose.Schema(
       required: true,
     },
     testcase1: {
-      type: String,
-      required: true,
+      input: {
+        type: String,
+        required: true,
+      },
+      output: {
+        type: String,
+        required: true,
+      },
     },
   },
   { timestamps: true }

@@ -1,18 +1,19 @@
 import { exec } from "child_process";
 import fs from 'fs';
 import path from 'path';
+import ProblemPage from '../../models/ProblemPage.model.js';
 
 const rootDir = path.resolve();
 const outputPath = path.join(rootDir, 'api', 'controllers', 'Compiler', 'outputs');
-const testCasesPath = path.join(rootDir, 'api', 'controllers', 'Compiler','test_cases.json'); // Path to test cases file
 
 if (!fs.existsSync(outputPath)) {
     fs.mkdirSync(outputPath, { recursive: true });
 }
 
-const executeCpp = (filepath, testCases) => {
+const executeCpp = (filepath, problem) => {
     const jobId = path.basename(filepath).split(".")[0];
     const outPath = path.join(outputPath, `${jobId}.exe`);
+    const { testcase1 } = problem;
 
     return new Promise((resolve, reject) => {
         // Compile the user's code
@@ -23,60 +24,45 @@ const executeCpp = (filepath, testCases) => {
                 reject({ error: compileError });
                 return;
             }
-    
-            // Execute the compiled code against each test case
-            const promises = testCases.map((testCase, index) => {
-                const { input, output: expectedOutput } = testCase;
-    
-                const command = `"${outPath}"`;
-                return new Promise((resolveTestCase, rejectTestCase) => {
-                    const childProcess = exec(command, (error, stdout, stderr) => {
-                        if (error) {
-                            console.error("Execution Error: ", error);
-                            rejectTestCase({ verdict: "Runtime Error", output: stderr });
-                            return;
-                        }
-        
-                        // Compare the output with expected output
-                        const actualOutput = stdout.trim();
-                        if (actualOutput === expectedOutput) {
-                            resolveTestCase({ verdict: "Accepted", output: actualOutput });
-                        } else {
-                            resolveTestCase({ verdict: "Wrong Answer", output: actualOutput, index });
-                        }
-                    });
-        
-                    // Provide input to the program
-                    childProcess.stdin.write(input);
-                    childProcess.stdin.end();
-                });
+
+            // Execute the compiled code against the test case
+            const command = `"${outPath}"`;
+            const { input, output: expectedOutput } = testcase1;
+            const childProcess = exec(command, (error, stdout, stderr) => {
+                if (error) {
+                    console.error("Execution Error: ", error);
+                    reject({ verdict: "Runtime Error", output: stderr });
+                    return;
+                }
+
+                // Compare the output with expected output
+                const actualOutput = stdout.toString().trim(); // Convert stdout to string
+                if (actualOutput === expectedOutput) {
+                    resolve({ verdict: "Accepted", output: actualOutput });
+                } else {
+                    resolve({ verdict: "Wrong Answer", output: actualOutput });
+                }
             });
-    
-            Promise.all(promises)
-                .then((results) => {
-                    // Check if all verdicts are "Accepted"
-                    const allAccepted = results.every(result => result.verdict === "Accepted");
-                    resolve({ allAccepted, failedTestCases: results.filter(result => result.verdict !== "Accepted") });
-                })
-                .catch((error) => reject(error));
+
+            // Provide input to the program
+            childProcess.stdin.write(input);
+            childProcess.stdin.end();
         });
     });
 };
 
-
-// Load test cases from file
-const testCasesData = fs.readFileSync(testCasesPath, 'utf8');
-const testCases = JSON.parse(testCasesData);
-
-// Usage
-export const executeAndTestCpp = async (filepath) => {
+export const executeAndTestCpp = async (filepath, problemId) => {
     try {
-        const { allAccepted, failedTestCases } = await executeCpp(filepath, testCases);
-        console.log("All tests passed:", allAccepted);
-        if (!allAccepted) {
-            console.log("Failed test cases:", failedTestCases);
+        const problem = await ProblemPage.findById(problemId);
+        if (!problem) {
+            throw new Error(`Problem with id ${problemId} not found`);
         }
-        return allAccepted;
+
+        const { verdict, output } = await executeCpp(filepath, problem);
+        console.log("Verdict:", verdict);
+        console.log("Output:", output);
+
+        return verdict === "Accepted";
     } catch (error) {
         console.error("Error: ", error);
         throw error;

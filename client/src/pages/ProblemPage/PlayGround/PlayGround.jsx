@@ -4,7 +4,7 @@ import PrefNav from "./PrefNav";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { javascript } from "@codemirror/lang-javascript";
-// import { cpp } from "@codemirror/lang-cpp";
+import { cpp } from "@codemirror/lang-cpp";
 import FooterValidator from "./FooterValidator";
 import axios from "axios";
 
@@ -33,6 +33,7 @@ export default function PlayGround({ problem }) {
       const response = await axios.post("http://localhost:3000/compiler/generateFile", {
         language: selectedLanguage,
         code: code,
+        problemId: problem._id
       });
       console.log("Response:", response.data.output);
       // if(response.data.output){
@@ -60,7 +61,7 @@ export default function PlayGround({ problem }) {
             value={code}
             onChange={handleCodeChange}
             theme={vscodeDark}
-            extensions={[javascript()]}
+            extensions={[selectedLanguage === 'cpp' ? cpp() : javascript()]} // Use cpp language if selectedLanguage is 'cpp', otherwise use javascript
           />
         </div>
         {problem && (
@@ -89,7 +90,7 @@ export default function PlayGround({ problem }) {
               </div>
               <p className="text-sm font-medium mt-4 text-white">Output:</p>
               <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-                {problem.output}
+              {problem.testcase1 && problem.testcase1.output}
               </div>
             </div>
           </div>
