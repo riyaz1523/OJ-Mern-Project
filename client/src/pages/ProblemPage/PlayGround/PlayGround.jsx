@@ -7,21 +7,24 @@ import { javascript } from "@codemirror/lang-javascript";
 import { cpp } from "@codemirror/lang-cpp";
 import FooterValidator from "./FooterValidator";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function PlayGround({ problem }) {
   const [code, setCode] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const savedCode = localStorage.getItem("savedCode");
-    if (savedCode) {
-      setCode(savedCode);
-    }
-  }, []);
+  // useEffect(() => {
+  //   // const savedCode = localStorage.getItem("savedCode");
+  //   if (savedCode) {
+  //     setCode(savedCode);
+  //   }
+  // }, []);
 
   const handleCodeChange = (value) => {
     setCode(value);
-    localStorage.setItem("savedCode", value);
+    // localStorage.setItem("savedCode", value);
   };
 
   const handleLanguageChange = (value) => {
@@ -29,19 +32,24 @@ export default function PlayGround({ problem }) {
   };
 
   const handleSubmit = async () => {
+    setLoading(true)
     try {
       const response = await axios.post("http://localhost:3000/compiler/generateFile", {
         language: selectedLanguage,
         code: code,
         problemId: problem._id
       });
-      console.log("Response:", response.data.output);
-      // if(response.data.output){
-      //   tostify()
-      // }
+      // console.log("Response:", response.data.output);
+      if(response.data.output){
+        toast("Hurray! You are right")
+      }else if(!response.data.output){
+        toast("Oops, Wrong answer")
+      }
     } catch (error) {
-      console.error("Error:", error);
+      // console.error("Error:", error);
+      toast.error(error.message);
     }
+    setLoading(false);
   };
 
   return (
@@ -61,7 +69,7 @@ export default function PlayGround({ problem }) {
             value={code}
             onChange={handleCodeChange}
             theme={vscodeDark}
-            extensions={[selectedLanguage === 'cpp' ? cpp() : javascript()]} // Use cpp language if selectedLanguage is 'cpp', otherwise use javascript
+            extensions={[selectedLanguage === 'cpp' ? cpp() : javascript()]} 
           />
         </div>
         {problem && (
@@ -96,7 +104,8 @@ export default function PlayGround({ problem }) {
           </div>
         )}
       </Split>
-      <FooterValidator handleSubmit={handleSubmit} />
+      <FooterValidator handleSubmit={handleSubmit} loading={loading} setLoading={setLoading}/>
+      <ToastContainer theme="dark"/>
     </div>
   );
 }

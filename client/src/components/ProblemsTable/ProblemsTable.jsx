@@ -4,8 +4,10 @@ import { Link, Route } from "react-router-dom";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 export default function ProblemsTable() {
+  const { currentUser } = useSelector((state) => state.user);
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [problems, setProblems] = useState([]);
   const [query, setQuery] = useState("");
@@ -27,7 +29,7 @@ export default function ProblemsTable() {
         const [result, countResult, problemCountResult] = await Promise.all([
           axios.get("/problem/"),
           axios.get("/api/user/countuser"),
-          axios.get("/problem/countProblem")
+          axios.get("/problem/countProblem"),
         ]);
         setProblems(result.data);
         setUserCount(countResult.data);
@@ -106,9 +108,11 @@ export default function ProblemsTable() {
             <th scope="col" className="px-6 py-3 w-0 font-medium">
               Solution
             </th>
-            <th scope="col" className="px-6 py-3 w-0 font-medium">
-              Actions
-            </th>
+            {currentUser?.isAdmin && (
+              <th scope="col" className="px-6 py-3 w-0 font-medium">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody className="text-white">
@@ -155,20 +159,23 @@ export default function ProblemsTable() {
                   </td>
                   <td className="px-6 py-3 w-0">{problems.category}</td>
                   <td className="px-6 py-3 w-0">coming soon...</td>
-                  <td className="px-6 py-3 w-0 text-lg">
-                    <Link to={`/updateProblem/${problems._id}`}>
-                      <button className="text-16px">
-                        <FaEdit />
+
+                  {currentUser?.isAdmin && (
+                    <td className="px-6 py-3 w-0 text-lg">
+                      <Link to={`/updateProblem/${problems._id}`}>
+                        <button className="text-16px">
+                          <FaEdit />
+                        </button>
+                      </Link>
+                      &nbsp;
+                      <button
+                        className="text-16px"
+                        onClick={(e) => handleDelete(problems._id)}
+                      >
+                        <MdDelete />
                       </button>
-                    </Link>
-                    &nbsp;
-                    <button
-                      className="text-16px"
-                      onClick={(e) => handleDelete(problems._id)}
-                    >
-                      <MdDelete />
-                    </button>
-                  </td>
+                    </td>
+                  )}
                 </tr>
               );
             })}
@@ -182,39 +189,39 @@ export default function ProblemsTable() {
         </div>
       )}
       <nav className="flex justify-center mt-4">
-  <ul className="flex">
-    <li>
-      <button
-        className="px-3 py-1 mr-1 bg-dark-fill-3 text-white rounded-md hover:bg-gray-8"
-        onClick={prePage}
+        <ul className="flex">
+          <li>
+            <button
+              className="px-3 py-1 mr-1 bg-dark-fill-3 text-white rounded-md hover:bg-gray-8"
+              onClick={prePage}
+            >
+              Prev
+            </button>
+          </li>
+          {numbers.map((n, i) => (
+            <li key={i}>
+              <button
+                className={`px-3 py-1 mx-1 rounded-md ${
+                  currentPage === n
+                    ? "bg-dark-fill-3 text-white"
+                    : "dark-fill-2 hover:bg-gray-8 text-white"
+                }`}
+                onClick={() => changeCPage(n)}
               >
-        Prev
-      </button>
-    </li>
-    {numbers.map((n, i) => (
-      <li key={i}>
-        <button
-          className={`px-3 py-1 mx-1 rounded-md ${
-            currentPage === n
-              ? "bg-dark-fill-3 text-white"
-              : "dark-fill-2 hover:bg-gray-8 text-white"
-          }`}
-          onClick={() => changeCPage(n)}
-        >
-          {n}
-        </button>
-      </li>
-    ))}
-    <li>
-      <button
-        className="px-3 py-1 ml-1 bg-dark-fill-3 text-white rounded-md hover:bg-gray-8"
-        onClick={nextPage}
-              >
-        Next
-      </button>
-    </li>
-  </ul>
-</nav>
+                {n}
+              </button>
+            </li>
+          ))}
+          <li>
+            <button
+              className="px-3 py-1 ml-1 bg-dark-fill-3 text-white rounded-md hover:bg-gray-8"
+              onClick={nextPage}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
     </>
   );
 }

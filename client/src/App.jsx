@@ -26,13 +26,13 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />
           <Route path='/Problempage' element={<Problempage/>}/> 
-          <Route path='/createProblem' element={<CreateProblem />} />
-          <Route path='/updateProblem/:id' element={<UpdateProblem />} />
           <Route path='/workspace/:id' element={<WorkSpace />} />
         </Route >
-        {/* <Route element={<AdminRoute />}> */}
-          <Route path='admin/adminDashboard' element={<AdminPage />}/>
-        {/* </Route> */}
+        <Route element={<AdminRoute />}>
+          <Route path='/adminDashboard' element={<AdminPage />}/>
+          <Route path='/createProblem' element={<CreateProblem />} />
+          <Route path='/updateProblem/:id' element={<UpdateProblem />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -34,6 +35,7 @@ export default function SignUp() {
     } catch (error) {
       setLoading(false);
       setError(true);
+      toast.error("Add all fields")
     }
   };
   return (
@@ -76,8 +78,9 @@ export default function SignUp() {
             <span className="text-blue-500">Sign in</span>
           </Link>
         </div>
-        <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p>
+        {/* <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p> */}
       </div>
+      <ToastContainer />
     </div>
   );
 }

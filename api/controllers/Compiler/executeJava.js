@@ -1,67 +1,95 @@
-// import { exec } from 'child_process';
-// import fs from 'fs';
-// import path from 'path';
+import fs from 'fs';
+import path from 'path';
+import { exec } from 'child_process';
+import ProblemPage from '../../models/ProblemPage.model.js';
 
-// const rootDir = path.resolve();
-// const outputPath = path.join(rootDir, 'api', 'controllers', 'Compiler', 'outputs');
 
-// if (!fs.existsSync(outputPath)) {
-//     fs.mkdirSync(outputPath, { recursive: true });
-// }
+const rootDir = path.resolve();
+const tempDir = path.join(rootDir, 'api', 'controllers', 'Compiler','temp'); // Temporary directory
+const outputPath = path.join(rootDir, 'api', 'controllers', 'Compiler', 'outputs');
 
-// const executeJava = (filePath) => {
-//     return new Promise((resolve, reject) => {
-//         const jobId = path.basename(filePath).split('.')[0];
-//         const className = jobId;
-//         const classFilePath = path.join(outputPath, `${className}.class`);
+if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+}
+if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath, { recursive: true });
+}
 
-//         // Compile the Java file
-//         const compileCommand = `javac ${filePath} -d ${outputPath}`;
+export const executeJava = (filepath, problem) => {
+    const jobId = path.basename(filepath).split(".")[0];
+    const tempFilePath = path.join(tempDir, `${jobId}.java`);
+    const outPath = path.join(outputPath, `${jobId}.class`);
+    const { testcase1 } = problem;
 
-//         console.log('Compiling command: ', compileCommand);
+    return new Promise((resolve, reject) => {
+        // Copy the Java file to the temporary directory
+        fs.copyFile(filepath, tempFilePath, (copyError) => {
+            if (copyError) {
+                console.error("File Copy Error: ", copyError);
+                reject({ error: copyError });
+                return;
+            }
 
-//         exec(compileCommand, (compileError, compileStdout, compileStderr) => {
-//             console.log('Compile Stdout: ', compileStdout);
-//             console.error('Compile Stderr: ', compileStderr);
+            // Compile the Java file in the temporary directory
+            const compileCommand = `javac "${tempFilePath}" -d "${tempDir}"`;
+            exec(compileCommand, (compileError) => {
+                if (compileError) {
+                    console.error("Compilation Error: ", compileError);
+                    reject({ error: compileError });
+                    return;
+                }
 
-//             if (compileError) {
-//                 console.error('Compile Error: ', compileError);
-//                 reject({ error: compileError, stderr: compileStderr });
-//                 return;
-//             }
+                // Move the compiled class file to the output directory with jobId as filename
+                fs.rename(path.join(tempDir, `${jobId}.class`), outPath, (moveError) => {
+                    if (moveError) {
+                        console.error("Move Error: ", moveError);
+                        reject({ error: moveError });
+                        return;
+                    }
 
-//             // Check if the .class file exists
-//             if (!fs.existsSync(classFilePath)) {
-//                 const errorMessage = `Failed to compile Java file. No .class file generated for ${jobId}`;
-//                 console.error(errorMessage);
-//                 reject(errorMessage);
-//                 return;
-//             }
+                    // Execute the compiled code against the test case
+                    const command = `java -classpath "${outputPath}" ${jobId}`;
+                    const { input, output: expectedOutput } = testcase1;
+                    const childProcess = exec(command, (error, stdout, stderr) => {
+                        if (error) {
+                            console.error("Execution Error: ", error);
+                            reject({ verdict: "Runtime Error", output: stderr });
+                            return;
+                        }
 
-//             // Move the generated .class file to the desired output path
-//             fs.renameSync(classFilePath, path.join(outputPath, `${jobId}.class`));
+                        // Compare the output with expected output
+                        const actualOutput = stdout.toString().trim(); // Convert stdout to string
+                        if (actualOutput === expectedOutput) {
+                            resolve({ verdict: "Accepted", output: actualOutput });
+                        } else {
+                            resolve({ verdict: "Wrong Answer", output: actualOutput });
+                        }
+                    });
 
-//             // Execute the Java program
-//             const executeCommand = `java -classpath ${outputPath} ${className}`;
+                    // Provide input to the program
+                    childProcess.stdin.write(input);
+                    childProcess.stdin.end();
+                });
+            });
+        });
+    });
+};
 
-//             console.log('Executing command: ', executeCommand);
+export const executeAndTestJava = async (filepath, problemId) => {
+    try {
+        const problem = await ProblemPage.findById(problemId);
+        if (!problem) {
+            throw new Error(`Problem with id ${problemId} not found`);
+        }
 
-//             exec(executeCommand, (executeError, executeStdout, executeStderr) => {
-//                 console.log('Execute Stdout: ', executeStdout);
-//                 console.error('Execute Stderr: ', executeStderr);
+        const { verdict, output } = await executeJava(filepath, problem);
+        console.log("Verdict:", verdict);
+        console.log("Output:", output);
 
-//                 if (executeError) {
-//                     console.error('Execute Error: ', executeError);
-//                     reject({ error: executeError, stderr: executeStderr });
-//                 } else if (executeStderr) {
-//                     console.error('Execute Stderr: ', executeStderr);
-//                     reject(executeStderr);
-//                 } else {
-//                     resolve(executeStdout);
-//                 }
-//             });
-//         });
-//     });
-// };
+        return verdict === "Accepted";
+    } catch (error) {
+        console.error("Error: ", error);
+        throw error;
+    }
+};
 
-// export { executeJava };

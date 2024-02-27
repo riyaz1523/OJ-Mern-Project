@@ -15,7 +15,7 @@ export default function Header() {
         <Link to="/">
           <h1 className="font-bold text-xl">Online Judge</h1>
         </Link>
-        {currentUser && (
+        {currentUser?.isAdmin && (
           <Link to="/createProblem">
             <button
               disabled={loading}

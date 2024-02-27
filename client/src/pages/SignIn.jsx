@@ -7,6 +7,8 @@ import {
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -32,12 +34,14 @@ export default function SignIn() {
       const data = await res.json();
       if (data.success === false) {
         dispatch(signInFailure(data));
+        // toast.error("Incorrect uname or password");
         return;
       }
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error));
+      // toast.error("Something went wrong!");
     }
   };
   return (
@@ -74,9 +78,10 @@ export default function SignIn() {
           </Link>
         </div>
         <p className="text-red-700 mt-5">
-          {error ? error.message || "Something went wrong!" : ""}
+          {/* {error ? error.message || "Something went wrong!" : ""} */}
         </p>
       </div>
+      <ToastContainer />
     </div>
   );
 }
