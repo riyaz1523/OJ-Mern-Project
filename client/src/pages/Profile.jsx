@@ -107,6 +107,7 @@ export default function Profile() {
       console.log(error);
     }
   };
+  console.log(currentUser)
 
   return (
     <div className='bg-dark-layer-2 text-white'>
