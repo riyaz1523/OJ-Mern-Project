@@ -21,8 +21,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['axios'],
-      external: ['react-split']
+      external: ['axios', 'react-split'] 
     },
   },
   plugins: [react()],
