@@ -19,6 +19,11 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      external: ['axios'],
+    },
+  },
   plugins: [react()],
   define: { global: 'globalThis'} 
 });
