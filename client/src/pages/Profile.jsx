@@ -17,7 +17,7 @@ import {
   deleteUserFailure,
   signOut,
 } from '../redux/user/userSlice';
-import axios from 'axios';; // Import your custom Axios instance
+import axios from 'axios'; // Import your custom Axios instance
 
 export default function Profile() {
   const dispatch = useDispatch();
