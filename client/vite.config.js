@@ -6,15 +6,15 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3000' || 'https://oj-mern-project.onrender.com/',
         secure: false,
       },
       '/problem': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3000' || 'https://oj-mern-project.onrender.com/',
         secure: true,
       },
       '/compiler': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3000' || 'https://oj-mern-project.onrender.com/',
         secure: true,
       },
     },
