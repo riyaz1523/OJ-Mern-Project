@@ -134,8 +134,8 @@ export default function ProblemsTable() {
                   className={`${idx % 2 === 1 ? "bg-dark-layer-1" : ""}`}
                 >
                   <th className="px-2 py-4 font-medium whitespace-nowrap text-dark-green-s">
-                    {/* <BsCheckCircle fontSize={"18"} width="18" /> */}
-                    {problems.status ? `active` : `inactive`}
+                    
+                    {problems.status ? <BsCheckCircle fontSize={"18"} width="18" /> : <BsCheckCircle fontSize={"18"} width="18" className="text-gray-500"/>}
                   </th>
                   <td className="px-1 py-3 w-0 w-32">
                     {problems.link ? (

@@ -41,9 +41,9 @@ export default function PlayGround({ problem }) {
       });
       // console.log("Response:", response.data.output);
       if(response.data.output){
-        toast("Hurray! You are right")
+        toast.success("Hurray! You are right")
       }else if(!response.data.output){
-        toast("Oops, Wrong answer")
+        toast.warn("Oops, Wrong answer")
       }
     } catch (error) {
       // console.error("Error:", error);

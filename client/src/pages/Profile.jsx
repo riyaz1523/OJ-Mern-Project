@@ -18,6 +18,8 @@ import {
   signOut,
 } from '../redux/user/userSlice';
 import axios from 'axios'; // Import your custom Axios instance
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -63,7 +65,7 @@ export default function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!currentUser || !currentUser.id) {
+    if (!currentUser || !currentUser._id) {
       console.error('User not authenticated or data not loaded');
       return;
     }
@@ -72,15 +74,16 @@ export default function Profile() {
       dispatch(updateUserStart());
       const res = await axios.post(`/api/user/update/${currentUser._id}`, formData);
       const data = res.data;
-      console.log(data);
       if (data.success === false) {
         dispatch(updateUserFailure(data));
         return;
       }
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
+      toast.success('User is updated successfully!')
     } catch (error) {
       dispatch(updateUserFailure(error));
+      toast.error(error.message)
     }
   };
 
@@ -107,7 +110,6 @@ export default function Profile() {
       console.log(error);
     }
   };
-  console.log(currentUser)
 
   return (
     <div className='bg-dark-layer-2 text-white'>
@@ -179,10 +181,8 @@ export default function Profile() {
           </span>
         </div>
         <p className='text-red-700 mt-5'>{error && 'Something went wrong!'}</p>
-        <p className='text-green-700 mt-5'>
-          {updateSuccess && 'User is updated successfully!'}
-        </p>
       </div>
+      <ToastContainer theme="dark"/>
     </div>
   );
 }
