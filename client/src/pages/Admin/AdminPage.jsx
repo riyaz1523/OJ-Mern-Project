@@ -12,8 +12,8 @@ export default function index() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const [countResult, problemCountResult] = await Promise.all([
-          axios.get("/api/user/countuser"),
-          axios.get("/problem/countProblem"),
+          axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/api/user/countuser`),
+          axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/countProblem`),
         ]);
 
         setUserCount(countResult.data);

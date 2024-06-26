@@ -44,7 +44,7 @@ export default function UpdateProblem() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await axios.put(`/problem/updateproblems/${id}`, formData);
+      const result = await axios.put(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/updateproblems/${id}`, formData);
       navigate("/");
     } catch (err) {
       console.log(err.message);
@@ -53,7 +53,7 @@ export default function UpdateProblem() {
 
   useEffect(() => {
     axios
-      .get(`/problem/getProblemsparams/${id}`)
+      .get(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/getProblemsparams/${id}`)
       .then((result) => {
         setFormData(result.data);
       })

@@ -17,7 +17,7 @@ import {
   deleteUserFailure,
   signOut,
 } from '../redux/user/userSlice';
-import axios from 'axios'; // Import your custom Axios instance
+import axios from 'axios'; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -69,10 +69,20 @@ export default function Profile() {
       console.error('User not authenticated or data not loaded');
       return;
     }
-
+  
     try {
       dispatch(updateUserStart());
-      const res = await axios.post(`/api/user/update/${currentUser._id}`, formData);
+      const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+      console.log('url',apiUrl); 
+      const res = await axios.post(
+        `${import.meta.env.VITE_REACT_APP_API_URL}/api/user/update/${currentUser._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       const data = res.data;
       if (data.success === false) {
         dispatch(updateUserFailure(data));
@@ -80,12 +90,13 @@ export default function Profile() {
       }
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
-      toast.success('User is updated successfully!')
+      toast.success('User is updated successfully!');
     } catch (error) {
       dispatch(updateUserFailure(error));
-      toast.error(error.message)
+      toast.error(error.message);
     }
   };
+  
 
   const handleDeleteAccount = async () => {
     try {

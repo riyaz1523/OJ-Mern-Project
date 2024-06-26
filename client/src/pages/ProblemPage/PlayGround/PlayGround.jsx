@@ -34,7 +34,7 @@ export default function PlayGround({ problem }) {
   const handleSubmit = async () => {
     setLoading(true)
     try {
-      const response = await axios.post("http://localhost:3000/compiler/generateFile", {
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}http://localhost:3000/compiler/generateFile`, {
         language: selectedLanguage,
         code: code,
         problemId: problem._id

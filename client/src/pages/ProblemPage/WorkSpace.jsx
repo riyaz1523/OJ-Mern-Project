@@ -11,7 +11,7 @@ export default function WorkSpace() {
 
   useEffect(() => {
     axios
-      .get(`/problem/getProblemsparams/${id}`)
+      .get(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/getProblemsparams/${id}`)
       .then((result) => {
         setProblem(result.data);
       })

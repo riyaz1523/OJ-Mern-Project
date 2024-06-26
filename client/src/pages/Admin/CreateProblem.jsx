@@ -14,7 +14,7 @@ export default function CreateProblem() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/problem/createProblem", formData);
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/createProblem`, formData);
       navigate("/");
     } catch (err) {
       console.log(err);

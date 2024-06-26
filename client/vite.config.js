@@ -1,23 +1,13 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
+import envCompatible from 'vite-plugin-env-compatible';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000' || 'https://oj-mern-project.onrender.com',
-        secure: false,
-      },
-      '/problem': {
-        target: 'http://localhost:3000' || 'https://oj-mern-project.onrender.com',
-        secure: true,
-      },
-      '/compiler': {
-        target: 'http://localhost:3000' || 'https://oj-mern-project.onrender.com',
-        secure: true,
-      },
-    },
-  },
-  plugins: [react()],
+  plugins: [
+    react(), // Add @vitejs/plugin-react here
+    envCompatible({
+      // Specify the path to your .env file (assuming it's in the root)
+      filepath: './.env',
+    }),
+  ],
 });

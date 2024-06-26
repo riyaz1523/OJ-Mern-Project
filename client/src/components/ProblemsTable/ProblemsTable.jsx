@@ -27,9 +27,9 @@ export default function ProblemsTable() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const [result, countResult, problemCountResult] = await Promise.all([
-          axios.get("/problem/"),
-          axios.get("/api/user/countuser"),
-          axios.get("/problem/countProblem"),
+          axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/`),
+          axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/api/user/countuser`),
+          axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/countProblem`),
         ]);
         setProblems(result.data);
         setUserCount(countResult.data);
@@ -46,7 +46,7 @@ export default function ProblemsTable() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`/problem/deleteProblem/${id}`);
+      const response = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL}/problem/deleteProblem/${id}`);
     } catch (err) {
       console.log(err);
     }

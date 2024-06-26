@@ -8,7 +8,7 @@ export default function Logout() {
 
     const handleSignOut = async () => {
         try {
-          await fetch('/api/auth/signout');
+          await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/api/auth/signout`);
           dispatch(signOut())
         } catch (error) {
           console.log(error);

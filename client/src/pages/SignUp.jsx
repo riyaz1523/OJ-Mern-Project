@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
 import { ToastContainer, toast } from "react-toastify";
+import axios from 'axios';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -12,32 +13,40 @@ export default function SignUp() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+ 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       setError(false);
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
+  
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/api/auth/signup`, formData, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      console.log(data);
+  
+      // console.log("Response Data:", response.data);
       setLoading(false);
-      if (data.success === false) {
+  
+      if (!response.data.success) {
         setError(true);
+        toast.error(response.data.message || "Signup failed");
         return;
       }
+  
       navigate("/sign-in");
     } catch (error) {
       setLoading(false);
       setError(true);
-      toast.error("Add all fields")
+      const errorMsg = error.response ? error.response.data.message : error.message;
+      toast.error(`Error occurred while submitting the form: ${errorMsg}`);
+      console.error('Error:', error.response ? error.response.data : error);
     }
   };
+  
+
   return (
     <div className="bg-dark-layer-2 h-screen text-white">
       <div className="p-3 max-w-lg mx-auto ">
