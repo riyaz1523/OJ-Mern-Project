@@ -1,16 +1,34 @@
 import mongoose from 'mongoose';
 
-const ProblemSchema = new mongoose.Schema(
+const testCaseSchema = new mongoose.Schema({
+  input: {
+    type: String,
+    required: true,
+  },
+  output: {
+    type: String,
+    required: true,
+  }
+}, { _id: false });
+
+const solvedBySchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  status: {
+    type: Boolean,
+    default: false,
+  }
+}, { _id: false });
+
+const problemSchema = new mongoose.Schema(
   {
-    // user: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     required: true,
-    //     ref: 'User',
-    //   },
-    status: {
-      type: Boolean,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
-      default: false,
+      ref: 'User',
     },
     title: {
       type: String,
@@ -45,20 +63,18 @@ const ProblemSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    testcase1: {
-      input: {
-        type: String,
-        required: true,
-      },
-      output: {
-        type: String,
-        required: true,
-      },
+    testCases: {
+      type: [testCaseSchema],
+      required: true,
     },
+    solvedBy: {
+      type: [solvedBySchema], // Array of objects with user and status fields
+      default: [], // Ensure it defaults to an empty array
+    }
   },
   { timestamps: true }
 );
 
-const ProblemPage = mongoose.model('Problem', ProblemSchema);
+const Problem = mongoose.model('Problem', problemSchema);
 
-export default ProblemPage;
+export default Problem;
