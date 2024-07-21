@@ -68,8 +68,8 @@ const problemSchema = new mongoose.Schema(
       required: true,
     },
     solvedBy: {
-      type: [solvedBySchema], // Array of objects with user and status fields
-      default: [], // Ensure it defaults to an empty array
+      type: [solvedBySchema], 
+      default: [], 
     }
   },
   { timestamps: true }

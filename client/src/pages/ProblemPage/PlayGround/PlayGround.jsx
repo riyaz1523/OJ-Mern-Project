@@ -9,11 +9,13 @@ import FooterValidator from "./FooterValidator";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from "react-redux";
 
 export default function PlayGround({ problem }) {
   const [code, setCode] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { currentUser, error } = useSelector((state) => state.user);
 
   // useEffect(() => {
   //   // const savedCode = localStorage.getItem("savedCode");
@@ -33,11 +35,15 @@ export default function PlayGround({ problem }) {
 
   const handleSubmit = async () => {
     setLoading(true)
+    const user_id = currentUser._id;
+    console.log(currentUser._id);
+    console.log(problem._id);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}http://localhost:3000/compiler/generateFile`, {
+      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/compiler/generateFile`, {
         language: selectedLanguage,
         code: code,
-        problemId: problem._id
+        problemId: problem._id,
+        userId: user_id
       });
       // console.log("Response:", response.data.output);
       if(response.data.output){

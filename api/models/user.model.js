@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, 
     },
+    solvedProblems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Problem' }],
   },
   { timestamps: true }
 );

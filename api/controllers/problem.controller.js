@@ -1,15 +1,16 @@
-import ProblemPage from "../models/ProblemPage.model.js";
+import Problem from "../models/ProblemPage.model.js";
+import User from '../models/user.model.js';
 
 export const createProblem = async (req, res, next) => {
   const { title, difficulty, category, solution, testcase1 } = req.body;
-  ProblemPage.create(req.body)
+  Problem.create(req.body)
     .then((problems) => res.json(problems))
     .catch((err) => res.json(err));
 };
 
 export const getProblems = async (req, res) => {
   try {
-    const problems = await ProblemPage.find();
+    const problems = await Problem.find();
     res.status(200).json(problems);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,7 +21,7 @@ export const getProblems = async (req, res) => {
 export const getproblemsParams = async (req, res) => {
   try {
     const id = req.params.id;
-    const problems = await ProblemPage.findById({ _id: id });
+    const problems = await Problem.findById({ _id: id });
     res.status(200).json(problems);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -30,7 +31,7 @@ export const getproblemsParams = async (req, res) => {
 export const updateProblems = async (req, res) => {
   try {
     const id = req.params.id;
-    const problems = await ProblemPage.findByIdAndUpdate(
+    const problems = await Problem.findByIdAndUpdate(
       { _id: id },
       {
         title: req.body.title,
@@ -55,7 +56,7 @@ export const updateProblems = async (req, res) => {
 export const deleteProblem = async (req, res) => {
   try {
     const id = req.params.id;
-    const problems = await ProblemPage.findByIdAndDelete({ _id: id });
+    const problems = await Problem.findByIdAndDelete({ _id: id });
     res.status(200).json(problems);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -65,7 +66,7 @@ export const deleteProblem = async (req, res) => {
 
 export const countproblems = async (req, res, next) => {
   try {
-    const PoblemCount = await ProblemPage.countDocuments();
+    const PoblemCount = await Problem.countDocuments();
     res.status(200).json({ count: PoblemCount });
   } catch (error) {
     next(error);
@@ -79,3 +80,15 @@ export const Example = async (req, res, next) => {
   // Send response back to the client if necessary
   res.send('Data received on the backend: ' + selectedOption);
 }
+
+
+
+export const getSolvedProblems = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate('solvedProblems');
+    res.status(200).json(user.solvedProblems);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
