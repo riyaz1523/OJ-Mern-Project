@@ -2,6 +2,7 @@ import { exec } from "child_process";
 import fs from 'fs';
 import path from 'path';
 import Problem from '../../models/ProblemPage.model.js';
+import User from '../../models/user.model.js';
 
 const rootDir = path.resolve();
 const outputPath = path.join(rootDir, 'api', 'controllers', 'Compiler', 'outputs');
@@ -79,6 +80,13 @@ export const executeAndTestCpp = async (filepath, problemId, userId) => {
           problem.solvedBy.push({ user: userId, status: true }); 
         }
         await problem.save();
+
+        // Update the user's solvedProblems array
+        const user = await User.findById(userId);
+        if (!user.solvedProblems.includes(problemId)) {
+          user.solvedProblems.push(problemId);
+          await user.save();
+        }
       }
   
       return results;

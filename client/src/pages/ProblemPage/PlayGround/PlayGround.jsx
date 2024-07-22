@@ -39,16 +39,35 @@ export default function PlayGround({ problem }) {
     console.log(currentUser._id);
     console.log(problem._id);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/compiler/generateFile`, {
-        language: selectedLanguage,
-        code: code,
-        problemId: problem._id,
-        userId: user_id
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/compiler/generateFile`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          {
+            language: selectedLanguage,
+            code: code,
+            problemId: problem._id,
+            userId: user_id
+          }
+        ),
       });
+      const data = await response.json();
+    //   const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/compiler/generateFile`,
+    //     withCredentials: true,
+    //     {
+    //     language: selectedLanguage,
+    //     code: code,
+    //     problemId: problem._id,
+    //     userId: user_id
+    //   },
+    // );
       // console.log("Response:", response.data.output);
-      if(response.data.output){
+      if(data.output){
         toast.success("Hurray! You are right")
-      }else if(!response.data.output){
+      }else if(!data.output){
         toast.warn("Oops, Wrong answer")
       }
     } catch (error) {
