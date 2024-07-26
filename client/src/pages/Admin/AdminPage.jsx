@@ -27,7 +27,7 @@ export default function index() {
   }, []);
   return (
     <div className='bg-dark-layer-2 h-screen'>
-      <SideNav />
+      {/* <SideNav /> */}
       {/* <h3 className="text-l text-center font-semibold text-white  ">
         Total Count of Users:
         <span className="text-green-500">{userCount.count}</span>

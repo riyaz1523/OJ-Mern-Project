@@ -32,11 +32,12 @@ export default function SignUp() {
   
       if (!response.data.success) {
         setError(true);
-        toast.error(response.data.message || "Signup failed");
-        return;
+        toast.success(response.data.message || "Signup failed");
+        setTimeout(() => {
+          navigate("/sign-in");
+        }, 2000);
       }
   
-      navigate("/sign-in");
     } catch (error) {
       setLoading(false);
       setError(true);

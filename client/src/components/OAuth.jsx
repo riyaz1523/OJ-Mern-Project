@@ -15,6 +15,7 @@ export default function OAuth() {
       const result = await signInWithPopup(auth, provider);
       const res = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/api/auth/google`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -25,7 +26,6 @@ export default function OAuth() {
         }),
       });
       const data = await res.json();
-      console.log(data);
       dispatch(signInSuccess(data));
       navigate('/');
     } catch (error) {
