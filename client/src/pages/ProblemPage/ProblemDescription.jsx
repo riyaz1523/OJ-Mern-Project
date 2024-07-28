@@ -23,7 +23,7 @@ export default function ProblemDescription({ problem }) {
           </div>
 
           <div className="flex px-0 py-4 h-[calc(100vh-94px)] overflow-y-auto">
-            <div className="px-5">
+            <div className="px-5 w-full">
               <div className="w-full">
                 <div className="flex space-x-4">
                   <div className="flex-1 mr-2 text-lg text-white font-medium">
@@ -35,33 +35,42 @@ export default function ProblemDescription({ problem }) {
                     {problem.difficulty}
                   </div>
                 </div>
-                <div className="text-white text-sm">
-                  <p>
-                    {problem.description}
-                  </p>
-                  {/* <p className="mt-3">
-                    You may assume that each input would have{" "}
-                    <strong>exactly one solution</strong>, and you may not use
-                    the same element twice.
-                  </p>
-                  <p className="mt-3">You can return the answer in any order.</p> */}
+                <div className="text-white text-sm mt-4">
+                  <p>{problem.description}</p>
                 </div>
-                <div className="mt-4">
-                  <div>
-                    <p className="font-medium text-white ">Example 1: </p>
-                    <div className="example-card text-white bg-dark-fill-2">
-                      <pre>
-                        <strong className="text-white">Input: </strong>
-                        {problem.input}
-                        <br />
-                        <strong>Output:</strong>
-                        {problem.output}
-                        <br />
-                        <strong>Explanation:</strong> {problem.explanation}
-                      </pre>
-                    </div>
+                <div className="text-white text-sm mt-4">
+                  <p>{problem.explanation}</p>
+                </div>
+
+                {/* Dynamically render test cases */}
+                {problem.testCases && problem.testCases.length > 0 && (
+                  <div className="mt-4">
+                    {problem.testCases.map((testCase, index) => (
+                      <div key={index} className="w-full mb-4">
+                        <p className="font-medium text-white">Example {index + 1}:</p>
+                        <div className="example-card text-white bg-dark-fill-2 p-4 rounded-lg w-full">
+                          <pre>
+                            <strong className="text-white">Input:</strong>
+                            <br />
+                            {testCase.input}
+                            <br />
+                            <strong>Output:</strong>
+                            <br />
+                            {testCase.output}
+                            <br />
+                            {testCase.explanation && (
+                              <>
+                                <strong>Explanation:</strong>
+                                <br />
+                                {problem.explanation}
+                              </>
+                            )}
+                          </pre>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

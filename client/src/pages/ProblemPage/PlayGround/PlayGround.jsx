@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Split from "react-split";
 import PrefNav from "./PrefNav";
 import CodeMirror from "@uiw/react-codemirror";
@@ -6,7 +6,6 @@ import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { javascript } from "@codemirror/lang-javascript";
 import { cpp } from "@codemirror/lang-cpp";
 import FooterValidator from "./FooterValidator";
-import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector } from "react-redux";
@@ -15,18 +14,11 @@ export default function PlayGround({ problem }) {
   const [code, setCode] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [loading, setLoading] = useState(false);
-  const { currentUser, error } = useSelector((state) => state.user);
-
-  // useEffect(() => {
-  //   // const savedCode = localStorage.getItem("savedCode");
-  //   if (savedCode) {
-  //     setCode(savedCode);
-  //   }
-  // }, []);
+  const [activeCase, setActiveCase] = useState(0); // State to track active case
+  const { currentUser } = useSelector((state) => state.user);
 
   const handleCodeChange = (value) => {
     setCode(value);
-    // localStorage.setItem("savedCode", value);
   };
 
   const handleLanguageChange = (value) => {
@@ -34,10 +26,8 @@ export default function PlayGround({ problem }) {
   };
 
   const handleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     const user_id = currentUser._id;
-    console.log(currentUser._id);
-    console.log(problem._id);
     try {
       const response = await fetch(`${import.meta.env.VITE_REACT_APP_API_URL}/compiler/generateFile`, {
         method: 'POST',
@@ -45,33 +35,20 @@ export default function PlayGround({ problem }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(
-          {
-            language: selectedLanguage,
-            code: code,
-            problemId: problem._id,
-            userId: user_id
-          }
-        ),
+        body: JSON.stringify({
+          language: selectedLanguage,
+          code: code,
+          problemId: problem._id,
+          userId: user_id
+        }),
       });
       const data = await response.json();
-    //   const response = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}/compiler/generateFile`,
-    //     withCredentials: true,
-    //     {
-    //     language: selectedLanguage,
-    //     code: code,
-    //     problemId: problem._id,
-    //     userId: user_id
-    //   },
-    // );
-      // console.log("Response:", response.data.output);
-      if(data.output){
-        toast.success("Hurray! You are right")
-      }else if(!data.output){
-        toast.warn("Oops, Wrong answer")
+      if (data.output) {
+        toast.success("Hurray! You are right");
+      } else {
+        toast.warn("Oops, Wrong answer");
       }
     } catch (error) {
-      // console.error("Error:", error);
       toast.error(error.message);
     }
     setLoading(false);
@@ -107,24 +84,27 @@ export default function PlayGround({ problem }) {
                 <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white" />
               </div>
             </div>
-            <div className="flex">
-              <div className="mr-2 items-start mt-2">
-                <div className="flex flex-wrap items-center gap-y-4">
-                  <div className="font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap text-white">
-                    Case
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+              {problem.testCases && problem.testCases.map((testCase, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center"
+                >
+                  <div
+                    onClick={() => setActiveCase(index)} 
+                    className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap text-white mb-2 ${
+                      activeCase === index ? 'bg-dark-fill-2' : ''
+                    }`} // Highlight active case
+                  >
+                    Case {index + 1}
                   </div>
+                  {activeCase === index && ( 
+                    <div className="w-full cursor-text rounded-lg border px-3 py-2 bg-dark-fill-3 border-transparent text-white">
+                      {testCase.input}
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
-            <div className="font-semibold my-4" >
-              <p className="text-sm font-medium mt-4 text-white">Input:</p>
-              <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-                {problem.input}
-              </div>
-              <p className="text-sm font-medium mt-4 text-white">Output:</p>
-              <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-              {problem.testcase1 && problem.testcase1.output}
-              </div>
+              ))}
             </div>
           </div>
         )}

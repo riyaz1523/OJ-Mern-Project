@@ -17,6 +17,7 @@ import {
   deleteUserFailure,
   signOut,
 } from '../redux/user/userSlice';
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -78,8 +79,10 @@ export default function Profile() {
       }
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
+      toast.success('User is updated successfully!');
     } catch (error) {
       dispatch(updateUserFailure(error));
+      toast.error('Something went wrong');
     }
   };
 
@@ -186,6 +189,7 @@ export default function Profile() {
       <p className='text-green-700 mt-5'>
         {updateSuccess && 'User is updated successfully!'}
       </p>
+      <ToastContainer />
     </div>
   );
 }
