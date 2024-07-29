@@ -55,6 +55,26 @@ export const deleteUser = async (req, res, next) => {
 
 }
 
+export const UserRankings = async (req, res, next) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $project: {
+          username: 1,
+          profilePicture: 1,
+          solvedProblemsCount: { $size: "$solvedProblems" }
+        }
+      },
+      { $sort: { solvedProblemsCount: -1 } },
+      { $limit: 10 }
+    ]);
+    
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export const countUser = async (req, res, next) => {
   try {
     const userCount = await User.countDocuments();

@@ -4,23 +4,34 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
-import problemRoutes from './routes/problem.route.js'
-import compilerRoutes from './routes/compiler.route.js'
+import problemRoutes from './routes/problem.route.js';
+import compilerRoutes from './routes/compiler.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import DBConnection from './DB/db.js';
-dotenv.config();
 
+dotenv.config();
 DBConnection();
 
 const __dirname = path.resolve();
 
 const app = express();
 
+// Configure CORS to allow multiple origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://oj-mern-project.vercel.app'
+];
 
 app.use(express.static(path.join(__dirname, 'client', 'dist')));
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(cookieParser());
@@ -35,17 +46,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
-
-// app.use(express.urlencoded({ extended: true }));
-
-
-
 app.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
-
-
-
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
@@ -56,4 +59,3 @@ app.use((err, req, res, next) => {
     statusCode,
   });
 });
-

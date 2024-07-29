@@ -12,6 +12,7 @@ import AdminPage from './pages/Admin/AdminPage';
 import CreateProblem from './pages/Admin/CreateProblem';
 import UpdateProblem from './pages/Admin/UpdateProblem';
 import WorkSpace from './pages/ProblemPage/WorkSpace';
+import DashBoard from './components/DashBoard';
 
 export default function App() {
   return (
@@ -19,13 +20,14 @@ export default function App() {
       {/* header */}
       <Header />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/problems' element={<Home />} />
         <Route path='/about' element={<About />} />
         <Route path='/sign-in' element={<SignIn />} />
         <Route path='/sign-up' element={<SignUp />} />
         <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />
           <Route path='/Problempage' element={<Problempage/>}/> 
+          <Route path='/' element={<DashBoard/>}/> 
           <Route path='/workspace/:id' element={<WorkSpace />} />
         </Route >
         <Route element={<AdminRoute />}>

@@ -14,7 +14,7 @@ export default function PlayGround({ problem }) {
   const [code, setCode] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [activeCase, setActiveCase] = useState(0); // State to track active case
+  const [activeCase, setActiveCase] = useState(0); 
   const { currentUser } = useSelector((state) => state.user);
 
   const handleCodeChange = (value) => {

@@ -77,66 +77,74 @@ export default function ProblemsTable() {
         />
       </div>
 
-      <table className="text-sm text-left text-gray-500 text-gray-400 sm:w-7/12 w-full max-w-[1200px] mx-auto">
-        <thead className="text-xs text-white uppercase dark:text-gray-400 border-b">
-          <tr>
-            <th scope="col" className="px-1 py-3 w-0 font-medium">Status</th>
-            <th scope="col" className="px-6 py-3 w-0 font-medium w-32">Title</th>
-            <th scope="col" className="px-6 py-3 w-0 font-medium">Difficulty</th>
-            <th scope="col" className="px-6 py-3 w-0 font-medium">Category</th>
-            <th scope="col" className="px-6 py-3 w-0 font-medium">Solution</th>
-            {currentUser?.isAdmin && (
-              <th scope="col" className="px-6 py-3 w-0 font-medium">Actions</th>
-            )}
-          </tr>
-        </thead>
-        <tbody className="text-white">
-          {records
-            .filter((problem) => problem.title.toLowerCase().includes(query))
-            .map((problem, idx) => {
-              const index = firstIndex + idx + 1;
-              const difficultyColor = problem.difficulty === "Easy"
-                ? "text-green-500"
-                : problem.difficulty === "Medium"
-                ? "text-yellow-500"
-                : "text-red-500";
+      <div className="bg-dark-layer-2 rounded-lg shadow-md">
+        <table className="min-w-full divide-y divide-dark-divider-border-2">
+          <thead className="bg-black">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">Title</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">Difficulty</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">Category</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">Solution</th>
+              {currentUser?.isAdmin && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">Actions</th>
+              )}
+            </tr>
+          </thead>
+          <tbody className="bg-dark-layer-1 divide-y divide-dark-divider-border-2">
+            {records
+              .filter((problem) => problem.title.toLowerCase().includes(query))
+              .map((problem, idx) => {
+                const index = firstIndex + idx + 1;
+                const difficultyColor = problem.difficulty === "Easy"
+                  ? "text-green-500"
+                  : problem.difficulty === "Medium"
+                  ? "text-yellow-500"
+                  : "text-red-500";
 
-              return (
-                <tr key={idx} className={`${idx % 2 === 1 ? "bg-dark-layer-1" : ""}`}>
-                  <th className="px-2 py-4 font-medium whitespace-nowrap text-dark-green-s">
-                    {problem.solvedBy.some(sb => sb.user === currentUser._id && sb.status)
-                      ? <BsCheckCircle fontSize={"18"} width="18" className="text-green-500" />
-                      : <BsCheckCircle fontSize={"18"} width="18" className="text-gray-500" />}
-                  </th>
-                  <td className="px-1 py-3 w-0 w-32">
-                    <Link to={`/workspace/${problem._id}`} className="hover:text-blue-600 cursor-pointer">
-                      {index}.{problem.title}
-                    </Link>
-                  </td>
-                  <td className={`px-6 py-3 w-0 ${difficultyColor}`}>{problem.difficulty}</td>
-                  <td className="px-6 py-3 w-0">{problem.category}</td>
-                  <td className="px-6 py-3 w-0">coming soon...</td>
-                  {currentUser?.isAdmin && (
-                    <td className="px-6 py-3 w-0 text-lg">
-                      <Link to={`/updateProblem/${problem._id}`}>
-                        <button className="text-16px"><FaEdit /></button>
-                      </Link>
-                      &nbsp;
-                      <button className="text-16px" onClick={() => handleDelete(problem._id)}><MdDelete /></button>
+                return (
+                  <tr key={problem._id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-dark-green-s">
+                      {problem.solvedBy.some(sb => sb.user === currentUser._id && sb.status)
+                        ? <BsCheckCircle fontSize={"18"} width="18" className="text-green-500" />
+                        : <BsCheckCircle fontSize={"18"} width="18" className="text-gray-500" />}
                     </td>
-                  )}
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                      <Link to={`/workspace/${problem._id}`} className="hover:text-blue-600 cursor-pointer">
+                        {index}.{problem.title}
+                      </Link>
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${difficultyColor}`}>
+                      {problem.difficulty}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      {problem.category}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      coming soon...
+                    </td>
+                    {currentUser?.isAdmin && (
+                      <td className="px-6 py-4 whitespace-nowrap text-lg">
+                        <Link to={`/updateProblem/${problem._id}`}>
+                          <button className="text-16px"><FaEdit /></button>
+                        </Link>
+                        &nbsp;
+                        <button className="text-16px" onClick={() => handleDelete(problem._id)}><MdDelete /></button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      </div>
+
       {loadingProblems && (
-        <div className="w-full animate-pulse">
-          {[...Array(recordsPerPage)].map((_, idx) => (
-            <LoadingSkeleton key={idx} />
-          ))}
+        <div className="w-full mt-4">
+          <LoadingSkeleton />
         </div>
       )}
+
       <nav className="flex justify-center mt-4">
         <ul className="flex">
           <li>
@@ -158,13 +166,60 @@ export default function ProblemsTable() {
 
 const LoadingSkeleton = () => {
   return (
-    <div className="flex text-left space-x-12 mt-4 px-6 sm:w-7/12 w-full max-w-[1200px] mx-auto">
-      <div className="px-1 py-3 w-6 shrink-0 rounded-full bg-dark-layer-1 text-left"></div>
-      <div className="px-6 py-3 w-32 rounded-full bg-dark-layer-1"></div>
-      <div className="px-6 py-3 w-32 rounded-full bg-dark-layer-1"></div>
-      <div className="px-6 py-3 w-32 rounded-full bg-dark-layer-1"></div>
-      <div className="px-6 py-3 w-32 rounded-full bg-dark-layer-1"></div>
-      <span className="sr-only">Loading...</span>
+    <div className="bg-dark-layer-2 rounded-lg shadow-md">
+      <table className="min-w-full divide-y divide-dark-divider-border-2">
+        <thead className="bg-black">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">
+              <div className="bg-dark-gray-6 h-4 rounded-md w-24"></div>
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">
+              <div className="bg-dark-gray-6 h-4 rounded-md w-32"></div>
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">
+              <div className="bg-dark-gray-6 h-4 rounded-md w-24"></div>
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">
+              <div className="bg-dark-gray-6 h-4 rounded-md w-24"></div>
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">
+              <div className="bg-dark-gray-6 h-4 rounded-md w-32"></div>
+            </th>
+            { /* Conditionally render the Actions column skeleton */ }
+            {/* {currentUser?.isAdmin && (
+              <th className="px-6 py-3 text-left text-xs font-medium text-dark-gray-7 uppercase tracking-wider">
+                <div className="bg-dark-gray-6 h-4 rounded-md w-24"></div>
+              </th>
+            )} */}
+          </tr>
+        </thead>
+        <tbody className="bg-dark-layer-1 divide-y divide-dark-divider-border-2">
+          {[...Array(7)].map((_, idx) => (
+            <tr key={idx}>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-dark-gray-6 h-6 rounded-md w-6"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-dark-gray-6 h-6 rounded-md w-32"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-dark-gray-6 h-6 rounded-md w-24"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-dark-gray-6 h-6 rounded-md w-24"></div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="bg-dark-gray-6 h-6 rounded-md w-32"></div>
+              </td>
+              {/* {currentUser?.isAdmin && (
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="bg-dark-gray-6 h-6 rounded-md w-24"></div>
+                </td>
+              )} */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
