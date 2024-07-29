@@ -56,7 +56,8 @@ The backend is built using:
    npm run dev
    ```
 .env example
-    ```
+
+    ```  
     VITE_FIREBASE_API_KEY = <Your API KEY>
     VITE_REACT_APP_API_URL=<Backend Endpoint URL>
     ```
@@ -71,8 +72,10 @@ The backend is built using:
    npm install
    npm run dev
    ```
-.env example
-    ```
+env example
+
+    ```  
     MONGO_URL= <your MongoDB URL>
+    
     JWT_SECRET= <Your Secret Key>
     ```
