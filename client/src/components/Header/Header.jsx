@@ -120,9 +120,14 @@ export default function Header() {
               </div>
             </>
           ) : (
-            <Link to="/profile">
+            <>
+              <Link to="/sign-in">
               <li className="text-lg font-medium hover:text-gray-300 transition-colors">Sign In</li>
             </Link>
+            <Link to="/sign-up">
+              <li className="text-lg font-medium hover:text-gray-300 transition-colors">Sign Up</li>
+            </Link>
+            </>
           )}
         </ul>
       </div>

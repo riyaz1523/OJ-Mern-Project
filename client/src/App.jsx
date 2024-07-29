@@ -13,6 +13,7 @@ import CreateProblem from './pages/Admin/CreateProblem';
 import UpdateProblem from './pages/Admin/UpdateProblem';
 import WorkSpace from './pages/ProblemPage/WorkSpace';
 import DashBoard from './components/DashBoard';
+import LandingPage from './components/LandingPage';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
       <Header />
       <Routes>
         <Route path='/problems' element={<Home />} />
+        <Route path='/home' element={<LandingPage />} />
         <Route path='/about' element={<About />} />
         <Route path='/sign-in' element={<SignIn />} />
         <Route path='/sign-up' element={<SignUp />} />
